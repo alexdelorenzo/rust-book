@@ -1,14 +1,16 @@
-// fn largest<T>(list: &[T]) -> T {
-//   let mut largest = list[0];
-//   
-//   for &item in list {
-//     if item > largest {
-//       largest = item;
-//     }
-//   }
-//   
-//   largest
-// }
+use chap10::*;
+
+fn largest<T: PartialOrd + Copy>(list: &[T]) -> T {
+  let mut largest = list[0];
+  
+  for &item in list {
+    if item > largest {
+      largest = item;
+    }
+  }
+  
+  largest
+}
 
 struct Point<T, U> {
   x: T,
@@ -44,8 +46,8 @@ impl<T, U> Point<T, U> {
 fn main() {
   let nums = vec![34, 50, 25, 100, 65];
   let chars = vec!['a', 'b', 'c', 'd'];
-  // let result = largest(&nums);
-// let result = largest(&chars);
+  let result = largest(&nums);
+  let result = largest(&chars);
   let integer = Point { x: 5, y: 30 };
   let float = Point { x: 1.0, y: 4.0 };
   let works = Point { x: 5, y: 4.0 };
@@ -61,7 +63,34 @@ fn main() {
    };
 
    x(1);
-  
 
+   let p1 = Point { x: 5, y: 10.4 };
+   let p2 = Point { x: "hello", y: 'c' };
+
+   let p3 = p1.mixup(p2);
+
+   println!("{}, {}", p3.x, p3.y);
+  
+  // rust uses monomorphization to transform generic defs
+  // into concrete definitions
+
+
+  let tweet = Tweet {
+    username: String::from("username"),
+    content: String::from("this is the content"),
+    reply: false,
+    retweet: false,
+  };
+
+  println!("tweet: {}", tweet.summarize());
+
+  let article = NewsArticle {
+    headline: String::from("headline"),
+    location: String::from("location"),
+    author: String::from("author name"),
+    content: String::from("content"),
+  };
+
+  println!("news article: {}", article.summarize());
   
 }
