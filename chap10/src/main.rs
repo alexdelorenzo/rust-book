@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use chap10::*;
 
 fn largest<T: PartialOrd + Copy>(list: &[T]) -> T {
@@ -42,6 +44,70 @@ impl<T, U> Point<T, U> {
     }
   }
 }
+
+// all references in parameters & return val have same lifetime
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+  if x.len() > y.len() {
+    x
+  } else {
+    y
+  }
+}
+
+
+// compiles because lifetime of y has no bearing on lifetime of return value
+fn longest2<'a>(x: &'a str, y: &str) -> &'a str {
+  x
+}
+
+// illegal, lifetime of result ends with function, can't create dangling reference
+// fn longest3<'a>(x: &str, y: &str) -> &'a str {
+//   let result = String::from("a long string");
+//   result.as_str()
+// }
+
+// lifetime of ImportantExcerpt can't outlive its 'part' field
+struct ImportantExcerpt<'a> {
+  part: &'a str,
+}
+
+// structs with reference fields must have lifetimes
+struct Test<'a> {
+  part: &'a str,
+}
+
+
+impl<'a> ImportantExcerpt<'a> {
+  fn level(&self) -> i32 {
+    3
+  }
+}
+
+impl<'a> ImportantExcerpt<'a> {
+  fn announce(&self, announcement: &str) -> &str {
+    println!("Attention: {}", announcement);
+    self.part
+  }
+}
+
+
+fn longest_with_announcement<'a, T>(
+  x: &'a str,
+  y: &'a str,
+  ann: T,
+) -> &'a str 
+where
+    T: Display,
+{
+  println!("Announcement! {}", ann);
+
+  if x.len() > y.len() {
+    x
+  } else {
+    y
+  }
+}
+
 
 fn main() {
   let nums = vec![34, 50, 25, 100, 65];
@@ -92,5 +158,35 @@ fn main() {
   };
 
   println!("news article: {}", article.summarize());
+
+  {
+    let x = 5;
+    let r = &x;
+
+
+    println!("r: {}", r);
+  }
+
+  let s1 = String::from("dfsd");
+  let s2 = "dsdg";
+
+  let result = longest(s1.as_str(), s2);
+  println!("longest: {}", result);
   
+  let s1 = String::from("longest is long");
+  let result;
+  {
+    let s2 = String::from("short");
+    result = longest(s1.as_str(), s2.as_str());
+    println!("longest is {}", result);
+  }
+
+  let novel = String::from("here's some content. and here is some more..");
+  let first_sentence = novel.split('.').next().expect("No '.'");
+  let i = ImportantExcerpt {
+    part: first_sentence,
+  };
+
+  let s: &'static str = "This has a static lifetime.";
+
 }

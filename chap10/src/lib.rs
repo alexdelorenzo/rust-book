@@ -105,4 +105,4 @@ impl<T: PartialOrd + Display> Pair<T> {
 // // blanket implementation
 // impl<T: Display> ToString for T {
 
-}
+// }
